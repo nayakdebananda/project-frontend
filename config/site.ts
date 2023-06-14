@@ -1,18 +1,26 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "Next.js",
+  name: "Mock API",
   description:
-    "Beautifully designed components built with Radix UI and Tailwind CSS.",
+    "Quickly simulate the behavior of your REST full backend server.",
   mainNav: [
     {
       title: "Home",
       href: "/",
     },
+    {
+      title:"Projects",
+      href:'/projects'
+    },
+    {
+      title:"Docs",
+      href:'/docs'
+    },
   ],
   links: {
-    twitter: "https://twitter.com/shadcn",
-    github: "https://github.com/shadcn/ui",
-    docs: "https://ui.shadcn.com",
+    twitter: "/",
+    github: "/",
+    docs: "/docs",
   },
 }

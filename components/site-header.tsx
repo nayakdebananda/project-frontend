@@ -5,6 +5,9 @@ import { buttonVariants } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import { MainNav } from "@/components/main-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { FaSignOutAlt } from "react-icons/fa"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+
 
 export function SiteHeader() {
   return (
@@ -13,6 +16,7 @@ export function SiteHeader() {
         <MainNav items={siteConfig.mainNav} />
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">
+            <ThemeToggle />
             <Link
               href={siteConfig.links.github}
               target="_blank"
@@ -29,9 +33,7 @@ export function SiteHeader() {
               </div>
             </Link>
             <Link
-              href={siteConfig.links.twitter}
-              target="_blank"
-              rel="noreferrer"
+              href='/'
             >
               <div
                 className={buttonVariants({
@@ -39,11 +41,19 @@ export function SiteHeader() {
                   variant: "ghost",
                 })}
               >
-                <Icons.twitter className="h-5 w-5 fill-current" />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <FaSignOutAlt className="h-5 w-5 fill-current" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Log out</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <span className="sr-only">Twitter</span>
               </div>
             </Link>
-            <ThemeToggle />
           </nav>
         </div>
       </div>
