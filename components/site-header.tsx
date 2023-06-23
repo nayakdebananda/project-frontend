@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link"
 
 import { siteConfig } from "@/config/site"
@@ -7,6 +8,8 @@ import { MainNav } from "@/components/main-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { FaSignOutAlt } from "react-icons/fa"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { signOut } from "firebase/auth"
+import { auth } from "@/app/utils/firebase"
 
 
 export function SiteHeader() {
@@ -44,7 +47,7 @@ export function SiteHeader() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <FaSignOutAlt className="h-5 w-5 fill-current" />
+                      <div onClick={()=>signOut(auth)}><FaSignOutAlt className="h-5 w-5 fill-current"  /></div>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Log out</p>

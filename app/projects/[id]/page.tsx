@@ -1,5 +1,7 @@
-
+"use client"
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
+import { auth } from '@/app/utils/firebase'
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import Method from "@/components/ui/method"
@@ -16,33 +18,51 @@ import { Separator } from "@/components/ui/separator"
 import {
   Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger
 } from '@/components/ui/sheet'
-import { Textarea } from "@/components/ui/textarea"
 import { FaPlus, FaRegCopy } from "react-icons/fa"
+import JSXStyle from "styled-jsx/style"
+import useAxiosPrivate from '@/app/hooks/useAxiosPrivate'
+import { useAuthState } from 'react-firebase-hooks/auth'
+
+import { useRouter } from 'next/navigation'
+
 
 interface ParamsType {
   params: {
     id: String
   }
 }
-const playlists = [
-  "Recently Added",
-  "Recently Played",
-  "Top Songs",
-  "Top Albums",
-  "Top Artists",
-  "Logic Discography",
-  "Bedtime Beats",
-  "Feeling Happy",
-  "I miss Y2K Pop",
-  "Runtober",
-  "Mellow Days",
-  "Eminem Essentials",
-  "sia",
-  "unstopable"
-]
+
+interface Response {
+    url: String,
+    method:String
+}
+
+const data = {
+  message: "success",
+  name: "debananda",
+  title: "login success",
+}
+
 function ProjectDetailsPage({ params }: ParamsType) {
   console.log(params)
-
+  
+  const axios = useAxiosPrivate()
+  const [user,loading,error] = useAuthState(auth)
+  const [url,setUrl] = useState<Response[]>([])
+  const [response, setResponse] = useState()
+  const router = useRouter()
+  useEffect(()=>{
+    try {
+      (async()=>{
+        const response = await axios.get(`/project/links/${params.id}`)
+        setUrl(response.data)
+      })()
+    } catch (error) {
+      console.log(error)
+    }
+    console.log("hello");
+    
+  },[user])
   return (
     <>
       <Sheet>
@@ -58,14 +78,17 @@ function ProjectDetailsPage({ params }: ParamsType) {
             </div>
             <ScrollArea className="mt-5 h-[70vh] overscroll-contain px-2">
               <div className="space-y-1 p-2">
-                {playlists?.map((playlist, i) => (
+                {url?.map((obj, i) => (
                   <Button
-                    key={`${playlist}-${i}`}
+                    key={`${obj.url}-${i}`}
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start font-normal"
+                    className=" w-full justify-start font-normal"
+                    onClick={()=>{
+                      axios.get(`/project/${params.id}?links=${obj.url}&method=${obj.method}`).then(data=>setResponse(data.data[0].response))
+                    }}
                   >
-                    {playlist}
+                    <Method text={obj.method}/>{obj.url}
                   </Button>
                 ))}
               </div>
@@ -73,12 +96,19 @@ function ProjectDetailsPage({ params }: ParamsType) {
           </div>
           <div className="mt-4 flex w-full flex-col gap-4 px-5">
             <Button variant='outline' className="justify-start px-4 py-3 font-mono text-sm"><FaRegCopy className="mr-5" /> <Method text='PATCH' /> api/todo/id</Button>
-            <div className="grow rounded-md border-2 p-5">
-              api/todo/id
+            <div className="h-[70vh] rounded-md border-2 p-5">
+              <div className=''>
+              <pre className='inline-block overflow-scroll'>
+                {
+                  JSON.stringify(response, null, 2)
+                }
+              </pre>
+              </div>
+              
             </div>
           </div>
         </div>
-          
+
         <SheetContent>
           <SheetHeader>
             <SheetTitle>Create a new resource</SheetTitle>
@@ -93,24 +123,5 @@ function ProjectDetailsPage({ params }: ParamsType) {
   )
 }
 
-{/* <Card className="grid h-full grid-cols-1 gap-6 p-6">
-          <div>
-            <Label className="mb-4 block">{params.id}</Label>
-            <Select>
-              <SelectTrigger className="">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col justify-start overflow-y-scroll">
-          <Textarea className="" readOnly={true} value='body Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt impedit ullam molestiae. Ipsa error asperiores quae perferendis iusto explicabo facere adipisci accusamus et est eius vitae voluptas, accusantium, quia ab.' />
-          <Textarea className="" readOnly={true} value='Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt impedit ullam molestiae. Ipsa error asperiores quae perferendis iusto explicabo facere adipisci accusamus et est eius vitae voluptas, accusantium, quia ab.' />
-          </div>
-        </Card> */}
 
 export default ProjectDetailsPage
